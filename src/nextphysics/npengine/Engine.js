@@ -14,13 +14,15 @@ NP.Engine = function(physics) {
   };
 
   this.update = function(deltaT) {
-    _.each(objects, function (object, index) {
+    var i, len;
+    for (i=0, len=objects.length; i<len; i++) {
+      var object = objects[i];
       resetForce(object);
       updateForce(object);
       updateVelocity(object, deltaT);
       updatePosition(object, deltaT);
       collisionCheck(object);
-    });
+    }
   };
 
   function resetForce(object) {
@@ -28,9 +30,14 @@ NP.Engine = function(physics) {
   }
 
   function updateForce(object) {
-    _.each(object.forces, function (force, index) {
-      object.force.add(force);
-    });
+    var i, j, lenI, lenJ;
+    for (i=0, lenI=objects.length; i<lenI; i++) {
+      var forces = object[i].forces;
+      var force = object[i].force;
+      for (j=0, lenJ=forces.length; j<lenJ; j++) {
+        force.add(forces[j]);
+      }
+    }
   }
 
   function updateVelocity(object, deltaT) {
