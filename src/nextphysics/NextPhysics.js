@@ -11,14 +11,10 @@ NextPhysics = function (canvasContainer) {
   // prevent right mouse click
   document.oncontextmenu = document.body.oncontextmenu = function() {return false;};
 
-  var defaults = {
-  };
-
   var engine = new NP.Engine(this);
   var renderer = new NP.Renderer(canvasContainer);
 
   var deltaT = 0.01;
-  this.gravity = new THREE.Vector3(0, 9.8, 0);
 
   this.add = function (npobject) {
     engine.add(npobject);
@@ -92,8 +88,9 @@ NextPhysics = function (canvasContainer) {
     5: false
   };
 
+  // camera focus
   var geometry = new THREE.SphereGeometry(0.5);
-  var material = new THREE.MeshBasicMaterial();
+  var material = new THREE.MeshBasicMaterial({transparent:true,opacity:0.5,color:0xffffff});
   var sphere = new THREE.Mesh(geometry, material);
   sphere.position.set(cameraLookPosition.x, cameraLookPosition.y, cameraLookPosition.z);
   renderer.scene.add(sphere);
@@ -219,22 +216,18 @@ NextPhysics = function (canvasContainer) {
         case 87:
         case 38:
           pressedKeys[KEY_UP] = false;
-//          cameraVertVel = 0;
           break;
         case 83:
         case 40:
           pressedKeys[KEY_DOWN] = false;
-//          cameraVertVel = 0;
           break;
         case 65:
         case 37:
           pressedKeys[KEY_LEFT] = false;
-//          cameraHoriVel = 0;
           break;
         case 68:
         case 39:
           pressedKeys[KEY_RIGHT] = false;
-//          cameraHoriVel = 0;
           break;
       }
     }, false);

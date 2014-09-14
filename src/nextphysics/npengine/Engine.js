@@ -8,75 +8,49 @@
  */
 NP.Engine = function(physics) {
   var objects = [];
-  var pairs = [];
 
   this.add = function(npobject) {
     objects.push(npobject)
   };
 
   this.update = function(deltaT) {
-
+    _.each(objects, function (object, index) {
+      resetForce(object);
+      updateForce(object);
+      updateVelocity(object, deltaT);
+      updatePosition(object, deltaT);
+      collisionCheck(object);
+    });
   };
 
+  function resetForce(object) {
+    object.force.set(0, 0, 0);
+  }
 
+  function updateForce(object) {
+    _.each(object.forces, function (force, index) {
+      object.force.add(force);
+    });
+  }
 
+  function updateVelocity(object, deltaT) {
+    object.velocity.x += object.force.x * deltaT;
+    object.velocity.y += object.force.y * deltaT;
+    object.velocity.z += object.force.z * deltaT;
+  }
 
+  function updatePosition(object, deltaT) {
+    object.position.x += object.velocity.x * deltaT;
+    object.position.y += object.velocity.y * deltaT;
+    object.position.z += object.velocity.z * deltaT;
+  }
 
-//    resetForce(objects);
-//    solveExternalForce(objects);
-//
-//    resetPairs(pairs);
-//    pairs = detectCollision(objects);
-//    solveInternalForce(pairs);
-//
-//    function resetForce(objects) {
-//      _.each(objects, function(object) {
-//        object.resetForce();
-//      });
-//    }
-//
-//    function solveExternalForce(objects) {
-//      _.each(objects, function(object) {
-//        if (object.enableGravity) object.force.add(physics.gravity);
-//      });
-//    }
-//
-//    function resetPairs(pairs) {
-//      pairs = [];
-//    }
-//
-//    function detectCollision(objects) {
-//      var i, j, length;
-//      var pair;
-//      for (i=0, length=objects.length; i<length; i++) {
-//        var objA = objects[i];
-//        for (j=i; j<length; j++) {
-//          var objB = objects[j];
-//          var distance = objA.distanceTo(objB);
-//          if (objA.radius+objB.radius > distance) {
-//            pair = new NP.Pairs(objA, objB);
-//            pair.distance = distance;
-//            pairs.append(pair);
-//          }
-//        }
-//      }
-//    }
-//
-//    function solveInternalForce(pairs) {
-//      _.each(pairs, function(pair) {
-//        var objA = pair[0];
-//        var objB = pair[1];
-//        objA.
-//      });
-//    }
-//  };
+  function collisionCheck(object) {
+    if (object.position.y < 0) {
+      object.velocity.y = Math.abs(object.velocity.y);
+      object.position.y = 0;
+    }
+  }
 };
 
 NP.Engine.prototype.constructor = NP.Engine;
-
-
-
-NP.Pairs = function(objectA, objectB) {
-  this.objectA = objectA;
-  this.objectB = objectB;
-};

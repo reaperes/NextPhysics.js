@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8">
   <title>Next PhysicsEngine (mini) - Pendulum</title>
+  <script type="text/javascript" src="lib/three-r68.js"></script>
   <script type="text/javascript" src="bin/nextphysics.dev.js"></script>
   <script type="text/javascript" src="lib/jquery-2.1.1.js"></script>
-  <script type="text/javascript" src="lib/three-r68.js"></script>
-  <script type="text/javascript" src="lib/PointerLockControls.js"></script>
   <script type="text/javascript" src="lib/stats.min.js"></script>
   <script type="text/javascript" src="lib/dat.gui.min.js"></script>
   <script type="text/javascript" src="lib/underscore.js"></script>
@@ -22,16 +21,21 @@
 
   var physics = new NextPhysics(document.getElementById('canvas-container'));
 
-  for (var i=0; i<2; i++)
-    for (var j=0; j<2; j++)
-      for (var k=0; k<2; k++)
-        physics.add(new NP.Sphere(i*5, j*5, k*5, .5));
+  setTimeout(loop, 88);
 
-  physics.border(-10, -10, -10, 10, 10, 10);
   physics.start();
 
+  var loopCount = 0;
+  function loop() {
+    var x = Math.floor(Math.random() * 28) - 14;
+    var z = Math.floor(Math.random() * 28) - 14;
+    var r = Math.random() * 0.4;
+    var sphere = new NP.Sphere(x, 5, z, r);
+    sphere.applyForce(new NP.Force(0, -9.8, 0));
+    physics.add(sphere);
 
-
+    if (loopCount < 100) setTimeout(loop, loopCount++ * 88);
+  }
 
 
 //  var engine = new NPEngine(document.getElementById("canvas"));

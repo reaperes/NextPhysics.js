@@ -35,7 +35,7 @@ NP.Util = function() {
         return !1;
     };
     var c = new NP.Engine(this), d = new NP.Renderer(a), e = .01;
-    this.gravity = new THREE.Vector3(0, 9.8, 0), this.add = function(a) {
+    this.add = function(a) {
         c.add(a), d.add(a);
     }, this.border = function() {}, this.update = function() {
         b(), c.update(e);
@@ -58,7 +58,11 @@ NP.Util = function() {
         2: !1,
         1: !1,
         5: !1
-    }, p = new THREE.SphereGeometry(.5), q = new THREE.MeshBasicMaterial(), r = new THREE.Mesh(p, q);
+    }, p = new THREE.SphereGeometry(.5), q = new THREE.MeshBasicMaterial({
+        transparent: !0,
+        opacity: .5,
+        color: 16777215
+    }), r = new THREE.Mesh(p, q);
     r.position.set(g.x, g.y, g.z), d.scene.add(r);
     var s = .5;
     !function() {
@@ -127,47 +131,57 @@ NP.Util = function() {
         }, !1);
     }();
 }, NextPhysics.prototype.constructor = NextPhysics, NP.Engine = function() {
-    var a = [];
-    this.add = function(b) {
-        a.push(b);
-    }, this.update = function() {};
-}, NP.Engine.prototype.constructor = NP.Engine, NP.Pairs = function(a, b) {
-    this.objectA = a, this.objectB = b;
-}, NP.Force = function(a, b, c) {
-    this.x = void 0 !== a ? a : 0, this.y = void 0 !== b ? b : 0, this.z = void 0 !== c ? c : 0;
-}, NP.Force.prototype.constructor = NP.Force, NP.Object = function() {
-    this.type = void 0, this.forceFlag = !0, this.forces = [], this.force = new THREE.Vector3(), 
-    this.velocity = new THREE.Vector3(), this.position = new THREE.Vector3(), this.k = 2e4, 
-    this.enableGravity = !0;
-}, NP.Object.prototype.constructor = NP.Object, NP.Object.Type = {
-    LINE: "line",
-    CIRCLE: "circle",
-    SPHERE: "sphere"
-}, NP.Object.prototype.resetForce = function() {
-    this.forces = [];
-}, NP.Object.prototype.addForce = function(a) {
-    !a instanceof NP.Force || this.forces.append(a);
-}, NP.Object.prototype.update = function(a) {
-    this.velocity.x += this.force.x * a, this.velocity.y += this.force.y * a, this.velocity.z += this.force.z * a, 
-    this.position.x += this.velocity.x * a, this.position.y += this.velocity.y * a, 
-    this.position.z += this.velocity.z * a;
-}, NP.Object.prototype.renderScript = function() {}, NP.Object.prototype.renderScript = function() {}, 
-NP.Object.prototype.onCollision = function() {}, NP.Object.prototype.onMouseOver = function() {}, 
-NP.ObjectContainer = function() {
+    function a(a) {
+        a.force.set(0, 0, 0);
+    }
+    function b(a) {
+        _.each(a.forces, function(b) {
+            a.force.add(b);
+        });
+    }
+    function c(a, b) {
+        a.velocity.x += a.force.x * b, a.velocity.y += a.force.y * b, a.velocity.z += a.force.z * b;
+    }
+    function d(a, b) {
+        a.position.x += a.velocity.x * b, a.position.y += a.velocity.y * b, a.position.z += a.velocity.z * b;
+    }
+    function e(a) {
+        a.position.y < 0 && (a.velocity.y = Math.abs(a.velocity.y), a.position.y = 0);
+    }
+    var f = [];
+    this.add = function(a) {
+        f.push(a);
+    }, this.update = function(g) {
+        _.each(f, function(f) {
+            a(f), b(f), c(f, g), d(f, g), e(f);
+        });
+    };
+}, NP.Engine.prototype.constructor = NP.Engine, NP.Force = function(a, b, c) {
+    THREE.Vector3.call(this), this.x = void 0 !== a ? a : 0, this.y = void 0 !== b ? b : 0, 
+    this.z = void 0 !== c ? c : 0;
+}, NP.Force.prototype = Object.create(THREE.Vector3.prototype), NP.Force.prototype.constructor = NP.Force, 
+NP.Object = function() {
+    this.forces = [], this.force = new THREE.Vector3(), this.velocity = new THREE.Vector3(), 
+    this.position = new THREE.Vector3();
+}, NP.Object.prototype = {
+    constructor: NP.Object,
+    applyForce: function(a) {
+        if (!(a instanceof NP.Force)) throw new Error("NP.Object#applyForce: param must be a NP.Force object.");
+        this.forces.push(a);
+    }
+}, NP.ObjectContainer = function() {
     NP.Object.call(this), this.childs = [];
 }, NP.ObjectContainer.prototype = Object.create(NP.Object.prototype), NP.ObjectContainer.prototype.constructor = NP.ObjectContainer, 
 NP.Sphere = function(a, b, c, d) {
-    NP.Object.call(this), this.type = NP.Object.Type.SPHERE, this.position = new THREE.Vector3(), 
-    this.position.x = void 0 !== a ? a : 0, this.position.y = void 0 !== b ? b : 0, 
-    this.position.z = void 0 !== c ? c : 0, this.radius = void 0 !== d ? d : 1, this.k = 2e4;
+    NP.Object.call(this), this.position = new THREE.Vector3(a, b, c), this.radius = void 0 !== d ? d : 1;
 }, NP.Sphere.prototype = Object.create(NP.Object.prototype), NP.Sphere.prototype.constructor = NP.Sphere, 
-NP.Sphere.prototype.renderScript = function(a, b) {
-    var c = void 0 !== b.segments ? b.segments : 32, d = new THREE.SphereGeometry(this.radius, c, c), e = new THREE.MeshBasicMaterial({
-        color: void 0 !== b.color1 ? b.color1 : NP.ColorSets[0].color1,
+NP.Sphere.prototype.renderScript = function(a) {
+    var b = new THREE.SphereGeometry(this.radius), c = new THREE.Mesh(b, new THREE.MeshBasicMaterial({
+        color: 16777215 * Math.random(),
         wireframe: !0
-    }), f = new THREE.Mesh(d, e);
-    f.position.set(this.position.x, this.position.y, this.position.z), this.position = f.position, 
-    a.add(f);
+    }));
+    c.position.set(this.position.x, this.position.y, this.position.z), this.position = c.position, 
+    a.add(c);
 }, NP.ColorSets = function() {
     var a = {
         background: 16777215,
