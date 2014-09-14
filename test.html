@@ -4,217 +4,48 @@
   <meta charset="utf-8">
   <title>Next PhysicsEngine (mini) - Pendulum</title>
   <script type="text/javascript" src="lib/three-r68.js"></script>
-  <script type="text/javascript" src="bin/nextphysics.dev.js"></script>
   <script type="text/javascript" src="lib/jquery-2.1.1.js"></script>
   <script type="text/javascript" src="lib/stats.min.js"></script>
   <script type="text/javascript" src="lib/dat.gui.min.js"></script>
   <script type="text/javascript" src="lib/underscore.js"></script>
+  <script type="text/javascript" src="lib/underscore.js"></script>
+  <script type="text/javascript" src="bin/nextphysics.dev.js"></script>
   <script type="text/css" src="test.css"></script>
+  <!--Bootstrap-->
+  <link href="lib/css/bootstrap.min.css" rel="stylesheet">
+  <script src="lib/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <div id="canvas-container" style="position:fixed;top:0;left:0;width:100%;height:100%;">
+  <div id="canvas-container" style="position:fixed;top:0;left:0;width:100%;height:100%;"></div>
+  <div id="button-container" style="position:fixed;top:10px;right:10px;">
+    <button id="wind" type="button" class="btn btn-sm btn-primary">Wind</button>
+  </div>
   <div id="debugTool" style="position:fixed;top:100px;left:20px">
     <span id="debug" style="font-size:22px">hello</span>
   </div>
-</div>
 <script type="text/javascript">
 
   var physics = new NextPhysics(document.getElementById('canvas-container'));
 
-  var sphere = new NP.Sphere(5, 5, 5, 0.5, {mass: 1});
-  sphere.applyForce(new NP.Force(0, -9.8, 0));
+  var sphere = new NP.Sphere(4, 5, 0, 0.1, {mass: 1});
+  sphere.applyForce(new NP.Force(0, -9.8, 0, {regardlessOfMass: true}));
   physics.add(sphere);
 
+  var sphere2 = new NP.Sphere(8, 5, 0, 0.3, {mass: 3});
+  sphere2.applyForce(new NP.Force(0, -9.8, 0, {regardlessOfMass: true}));
+  physics.add(sphere2);
 
-
-
-
-
-
-
-
-  //  setTimeout(loop, 88);
-  //  var loopCount = 0;
-  //  function loop() {
-  //    var x = Math.floor(Math.random() * 28) - 14;
-  //    var z = Math.floor(Math.random() * 28) - 14;
-  //    var r = Math.random() * 0.4;
-  //    var sphere = new NP.Sphere(x, 5, z, r);
-  //    sphere.applyForce(new NP.Force(0, -9.8, 0));
-  //    physics.add(sphere);
-  //
-  //    if (loopCount < 100) setTimeout(loop, loopCount++ * 88);
-  //  }
+  var $wind = $('#wind');
+  $wind.mousedown(function () {
+    sphere.applyForce(new NP.Force(-20, 0, 0, {name:'wind'}));
+    sphere2.applyForce(new NP.Force(-20, 0, 0, {name:'wind'}));
+  });
+  $wind.mouseup(function () {
+    sphere.removeForce('wind');
+    sphere2.removeForce('wind');
+  });
 
   physics.start();
-
-
-
-//  var engine = new NPEngine(document.getElementById("canvas"));
-//
-//  var pendulum = new NPEngine.Pendulum();
-//  pendulum.setPivot({x: 1, y: 0});
-//  pendulum.setCircle({x: 1, y: -2, radius: 0.5});
-//
-//  engine.addObject(pendulum);
-
-
-
-//  var line = new Line(2, 0, 2, -2); // left, top, right, bottom;
-////  line.force = {gravity: 0,
-//
-//  var circle = new Circle(2, -2, 1); // x, y, radius
-//  circle.addForce({
-//    gravity: 9.8,
-//    tension: line
-//  });
-////  circle.force = {
-////    gravity: 1
-////  }
-//
-//  var pendulum = new Pendulum();
-//  pendulum.addObject(line);
-//  pendulum.addObject(circle);
-//
-//  var stage = new Stage();
-//  stage.addObject(pendulum);
-//
-//  var renderer = new Renderer(stage);
-//
-//  requestAnimationFrame(loop);
-//  loop = function() {
-//    stage.update();
-//    renderer.render();
-//  };
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//  var stage = new Stage();
-//  for (var i=0; i<10; i++) {
-//    var circle = new Circle(i, 0, 0.5);  // x, y, radius
-//    circle.body = 'rigid';
-////    circle.body = 'ideal';
-//    circle.addForce({
-//      x: 0.1*i,
-//      y: -0.1*i
-//    });
-//    circle.addVelocity({
-//      x = 0,
-//      y = i
-//    });
-//    circle.addDetection(['collision', 'edge-collision']);
-//    stage.addObject(circle);
-//  }
-//
-//  var renderer = new Renderer(stage);
-//
-//  requestAnimationFrame(loop);
-//  loop = function() {
-//    stage.update();
-//    renderer.render();
-//  };
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//  var sun = new Sphere(2, 2, 2, 1);  // x, y, z, radius
-//  var earth = new Sphere(0, 0, 0, 0.2);
-//  var moon = new Sphere(0, 0, -1, 0.1);
-//
-//  sun.addForce({
-//    gravitation: [earth, moon]
-//  });
-//
-//  earth.addForce({
-//    gravitation: moon
-//  });
-//  earth.addVelocity({
-//    x: 100000,
-//    y: 10000,
-//    z: 0
-//  });
-//
-//  moon.addVelocity({
-//    x: 10000,
-//    y: 1240,
-//    z: 0
-//  });
-//
-//  stage.addObject(sun);
-//  stage.addObject(earth);
-//  stage.addObject(moon);
-//
-//  var renderer = new Renderer(stage);
-//
-//  requestAnimationFrame(loop);
-//  loop = function() {
-//    stage.update();
-//    renderer.render();
-//  };
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//  Stage = function() {
-//    var interactionManager;   // handle mouse, key event
-//    var uiManager;            // handle button
-//    var engine;               // update physics
-//    var objects = [];
-//
-//    this.update = function() {
-//      for (var i=0; i<objects.length; i++) {
-//        engine.update();
-//        engine.collisionDetect();
-//      }
-//    }
-//  }
-//
-//  Renderer = function(stage) {
-//    var renderer = new CanvasRenerer;
-////    var renderer = new WebGLRenderer;
-//
-//    this.render = function() {
-//      for (var i=0; i<stage.objects.length; i++) {
-//        stage.objects[i].render();
-//      }
-//    }
-//  }
-
-
 
 </script>
 </body>

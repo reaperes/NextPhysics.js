@@ -154,9 +154,9 @@ NextPhysics = function (canvasContainer) {
    ****************************************************/
   var camera = renderer.camera;
   var cameraLookPosition = renderer.scene.position;
-  var radius = 30;
-  var theta = 30;
-  var phi = 50;
+  var radius = 20;
+  var theta = 0;
+  var phi = 10;
 
   //          w 87 119
   // a 65 97  s 83 115  d 68 100
@@ -330,18 +330,20 @@ NextPhysics.prototype.constructor = NextPhysics;
 NP.Engine = function(physics) {
   var objects = [];
 
-  this.add = function(npobject) {
-    objects.push(npobject)
+  this.add = function(object) {
+    objects.push(object);
   };
 
   this.update = function(deltaT) {
-    _.each(objects, function (object, index) {
+    var i, len;
+    for (i=0, len=objects.length; i<len; i++) {
+      var object = objects[i];
       resetForce(object);
       updateForce(object);
       updateVelocity(object, deltaT);
       updatePosition(object, deltaT);
       collisionCheck(object);
-    });
+    }
   };
 
   function resetForce(object) {
@@ -349,9 +351,20 @@ NP.Engine = function(physics) {
   }
 
   function updateForce(object) {
-    _.each(object.forces, function (force, index) {
-      object.force.add(force);
-    });
+    var i, len;
+    var forces = object.forces;
+    var force = object.force;
+    for (i=0, len=forces.length; i<len; i++) {
+      if (forces[i].regardlessOfMass)
+        force.add(forces[i]);
+      else {
+        if (object.mass != 0) {
+          force.x += forces[i].x / object.mass;
+          force.y += forces[i].y / object.mass;
+          force.z += forces[i].z / object.mass;
+        }
+      }
+    }
   }
 
   function updateVelocity(object, deltaT) {
@@ -383,18 +396,46 @@ NP.Engine.prototype.constructor = NP.Engine;
  * @class NP.Force
  * @constructor
  */
-NP.Force = function(x, y, z) {
+NP.Force = function(x, y, z, parameters) {
   THREE.Vector3.call( this );
+
+  this.name = '';
 
   this.x = x !== undefined ? x : 0;
   this.y = y !== undefined ? y : 0;
   this.z = z !== undefined ? z : 0;
+
+  this.regardlessOfMass = false;
+
+  this.setValues(parameters);
 };
 
 NP.Force.prototype = Object.create(THREE.Vector3.prototype);
 NP.Force.prototype.constructor = NP.Force;
 
+NP.Force.prototype.setValues = function (values) {
+  if (values === undefined) return;
 
+  var keys = Object.keys(values);
+  for(var i = 0, l = keys.length; i < l; i++) {
+    var key = keys[i];
+    var newValue = values[key];
+
+    if (newValue === undefined) {
+      console.warn( "NP.Object#setValues: '" + key + "' parameter is undefined." );
+      continue;
+    }
+
+    if (key in this) {
+      var currentValue = this[key];
+
+      if (currentValue instanceof THREE.Vector3 && newValue instanceof THREE.Vector3)
+        currentValue.copy( newValue );
+      else
+        this[ key ] = newValue;
+    }
+  }
+};
 /**
  * @author namhoon <emerald105@hanmail.net>
  */
@@ -406,10 +447,13 @@ NP.Force.prototype.constructor = NP.Force;
  * @constructor
  */
 NP.Object = function() {
+  this.name = '';
+
   this.forces = [];
   this.force = new THREE.Vector3();
   this.velocity = new THREE.Vector3();
   this.position = new THREE.Vector3();
+
   this.mass = 1;
 };
 
@@ -443,6 +487,14 @@ NP.Object.prototype = {
   applyForce: function (force) {
     if (!(force instanceof NP.Force)) throw new Error('NP.Object#applyForce: param must be a NP.Force object.');
     this.forces.push(force);
+  },
+
+  removeForce: function (name) {
+    if (typeof name != 'string') throw new Error('NP.Object#removeForce: param must be a force name (string).');
+    var i, len, forces=this.forces;
+    for (i=0, len=this.forces.length; i<len; i++)
+      if (forces[i].name == name)
+        forces.splice(i, 1);
   }
 };
 /**

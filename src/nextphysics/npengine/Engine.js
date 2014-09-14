@@ -9,8 +9,8 @@
 NP.Engine = function(physics) {
   var objects = [];
 
-  this.add = function(npobject) {
-    objects.push(npobject)
+  this.add = function(object) {
+    objects.push(object);
   };
 
   this.update = function(deltaT) {
@@ -30,12 +30,18 @@ NP.Engine = function(physics) {
   }
 
   function updateForce(object) {
-    var i, j, lenI, lenJ;
-    for (i=0, lenI=objects.length; i<lenI; i++) {
-      var forces = object[i].forces;
-      var force = object[i].force;
-      for (j=0, lenJ=forces.length; j<lenJ; j++) {
-        force.add(forces[j]);
+    var i, len;
+    var forces = object.forces;
+    var force = object.force;
+    for (i=0, len=forces.length; i<len; i++) {
+      if (forces[i].regardlessOfMass)
+        force.add(forces[i]);
+      else {
+        if (object.mass != 0) {
+          force.x += forces[i].x / object.mass;
+          force.y += forces[i].y / object.mass;
+          force.z += forces[i].z / object.mass;
+        }
       }
     }
   }

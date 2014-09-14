@@ -71,9 +71,9 @@ NextPhysics = function (canvasContainer) {
    ****************************************************/
   var camera = renderer.camera;
   var cameraLookPosition = renderer.scene.position;
-  var radius = 30;
-  var theta = 30;
-  var phi = 50;
+  var radius = 20;
+  var theta = 0;
+  var phi = 10;
 
   //          w 87 119
   // a 65 97  s 83 115  d 68 100

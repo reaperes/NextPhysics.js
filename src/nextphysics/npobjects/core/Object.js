@@ -9,10 +9,13 @@
  * @constructor
  */
 NP.Object = function() {
+  this.name = '';
+
   this.forces = [];
   this.force = new THREE.Vector3();
   this.velocity = new THREE.Vector3();
   this.position = new THREE.Vector3();
+
   this.mass = 1;
 };
 
@@ -46,5 +49,13 @@ NP.Object.prototype = {
   applyForce: function (force) {
     if (!(force instanceof NP.Force)) throw new Error('NP.Object#applyForce: param must be a NP.Force object.');
     this.forces.push(force);
+  },
+
+  removeForce: function (name) {
+    if (typeof name != 'string') throw new Error('NP.Object#removeForce: param must be a force name (string).');
+    var i, len, forces=this.forces;
+    for (i=0, len=this.forces.length; i<len; i++)
+      if (forces[i].name == name)
+        forces.splice(i, 1);
   }
 };
