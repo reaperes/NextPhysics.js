@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Next PhysicsEngine (mini) - Pendulum</title>
+  <script type="text/javascript" src="bin/nextphysics.dev.js"></script>
+  <script type="text/javascript" src="lib/jquery-2.1.1.js"></script>
+  <script type="text/javascript" src="lib/three-r68.js"></script>
+  <script type="text/javascript" src="lib/PointerLockControls.js"></script>
+  <script type="text/javascript" src="lib/stats.min.js"></script>
+  <script type="text/javascript" src="lib/dat.gui.min.js"></script>
+  <script type="text/javascript" src="lib/underscore.js"></script>
+  <script type="text/css" src="test.css"></script>
+</head>
+<body>
+  <div id="canvas-container" style="position:fixed;top:0;left:0;width:100%;height:100%;">
+  <div id="debugTool" style="position:fixed;top:100px;left:20px">
+    <span id="debug" style="font-size:22px">hello</span>
+  </div>
+</div>
+<script type="text/javascript">
+
+  var physics = new NextPhysics(document.getElementById('canvas-container'));
+
+  for (var i=0; i<2; i++)
+    for (var j=0; j<2; j++)
+      for (var k=0; k<2; k++)
+        physics.add(new NP.Sphere(i*5, j*5, k*5, .5));
+
+  physics.border(-10, -10, -10, 10, 10, 10);
+  physics.start();
+
+
+
+
+
+//  var engine = new NPEngine(document.getElementById("canvas"));
+//
+//  var pendulum = new NPEngine.Pendulum();
+//  pendulum.setPivot({x: 1, y: 0});
+//  pendulum.setCircle({x: 1, y: -2, radius: 0.5});
+//
+//  engine.addObject(pendulum);
+
+
+
+//  var line = new Line(2, 0, 2, -2); // left, top, right, bottom;
+////  line.force = {gravity: 0,
+//
+//  var circle = new Circle(2, -2, 1); // x, y, radius
+//  circle.addForce({
+//    gravity: 9.8,
+//    tension: line
+//  });
+////  circle.force = {
+////    gravity: 1
+////  }
+//
+//  var pendulum = new Pendulum();
+//  pendulum.addObject(line);
+//  pendulum.addObject(circle);
+//
+//  var stage = new Stage();
+//  stage.addObject(pendulum);
+//
+//  var renderer = new Renderer(stage);
+//
+//  requestAnimationFrame(loop);
+//  loop = function() {
+//    stage.update();
+//    renderer.render();
+//  };
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//  var stage = new Stage();
+//  for (var i=0; i<10; i++) {
+//    var circle = new Circle(i, 0, 0.5);  // x, y, radius
+//    circle.body = 'rigid';
+////    circle.body = 'ideal';
+//    circle.addForce({
+//      x: 0.1*i,
+//      y: -0.1*i
+//    });
+//    circle.addVelocity({
+//      x = 0,
+//      y = i
+//    });
+//    circle.addDetection(['collision', 'edge-collision']);
+//    stage.addObject(circle);
+//  }
+//
+//  var renderer = new Renderer(stage);
+//
+//  requestAnimationFrame(loop);
+//  loop = function() {
+//    stage.update();
+//    renderer.render();
+//  };
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//  var sun = new Sphere(2, 2, 2, 1);  // x, y, z, radius
+//  var earth = new Sphere(0, 0, 0, 0.2);
+//  var moon = new Sphere(0, 0, -1, 0.1);
+//
+//  sun.addForce({
+//    gravitation: [earth, moon]
+//  });
+//
+//  earth.addForce({
+//    gravitation: moon
+//  });
+//  earth.addVelocity({
+//    x: 100000,
+//    y: 10000,
+//    z: 0
+//  });
+//
+//  moon.addVelocity({
+//    x: 10000,
+//    y: 1240,
+//    z: 0
+//  });
+//
+//  stage.addObject(sun);
+//  stage.addObject(earth);
+//  stage.addObject(moon);
+//
+//  var renderer = new Renderer(stage);
+//
+//  requestAnimationFrame(loop);
+//  loop = function() {
+//    stage.update();
+//    renderer.render();
+//  };
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//  Stage = function() {
+//    var interactionManager;   // handle mouse, key event
+//    var uiManager;            // handle button
+//    var engine;               // update physics
+//    var objects = [];
+//
+//    this.update = function() {
+//      for (var i=0; i<objects.length; i++) {
+//        engine.update();
+//        engine.collisionDetect();
+//      }
+//    }
+//  }
+//
+//  Renderer = function(stage) {
+//    var renderer = new CanvasRenerer;
+////    var renderer = new WebGLRenderer;
+//
+//    this.render = function() {
+//      for (var i=0; i<stage.objects.length; i++) {
+//        stage.objects[i].render();
+//      }
+//    }
+//  }
+
+
+
+</script>
+</body>
+</html>
