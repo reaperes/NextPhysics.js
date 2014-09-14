@@ -162,18 +162,27 @@ NP.Util = function() {
 }, NP.Force.prototype = Object.create(THREE.Vector3.prototype), NP.Force.prototype.constructor = NP.Force, 
 NP.Object = function() {
     this.forces = [], this.force = new THREE.Vector3(), this.velocity = new THREE.Vector3(), 
-    this.position = new THREE.Vector3();
+    this.position = new THREE.Vector3(), this.mass = 1;
 }, NP.Object.prototype = {
     constructor: NP.Object,
+    setValues: function(a) {
+        if (void 0 !== a) for (var b = Object.keys(a), c = 0, d = b.length; d > c; c++) {
+            var e = b[c], f = a[e];
+            if (void 0 !== f) {
+                if (e in this) {
+                    var g = this[e];
+                    g instanceof THREE.Vector3 && f instanceof THREE.Vector3 ? g.copy(f) : this[e] = f;
+                }
+            } else console.warn("NP.Object#setValues: '" + e + "' parameter is undefined.");
+        }
+    },
     applyForce: function(a) {
         if (!(a instanceof NP.Force)) throw new Error("NP.Object#applyForce: param must be a NP.Force object.");
         this.forces.push(a);
     }
-}, NP.ObjectContainer = function() {
-    NP.Object.call(this), this.childs = [];
-}, NP.ObjectContainer.prototype = Object.create(NP.Object.prototype), NP.ObjectContainer.prototype.constructor = NP.ObjectContainer, 
-NP.Sphere = function(a, b, c, d) {
-    NP.Object.call(this), this.position = new THREE.Vector3(a, b, c), this.radius = void 0 !== d ? d : 1;
+}, NP.Sphere = function(a, b, c, d, e) {
+    NP.Object.call(this), this.position = new THREE.Vector3(a, b, c), this.radius = void 0 !== d ? d : 1, 
+    this.setValues(e);
 }, NP.Sphere.prototype = Object.create(NP.Object.prototype), NP.Sphere.prototype.constructor = NP.Sphere, 
 NP.Sphere.prototype.renderScript = function(a) {
     var b = new THREE.SphereGeometry(this.radius), c = new THREE.Mesh(b, new THREE.MeshBasicMaterial({

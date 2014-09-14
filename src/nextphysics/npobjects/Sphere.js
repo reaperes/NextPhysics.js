@@ -6,10 +6,12 @@
  * @class NP.Sphere
  * @constructor
  */
-NP.Sphere = function(x, y, z, radius) {
+NP.Sphere = function(x, y, z, radius, parameters) {
   NP.Object.call(this);
   this.position = new THREE.Vector3(x, y, z);
   this.radius = radius !== undefined ? radius : 1;
+
+  this.setValues(parameters);
 };
 
 NP.Sphere.prototype = Object.create(NP.Object.prototype);

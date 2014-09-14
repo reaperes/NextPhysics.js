@@ -410,10 +410,36 @@ NP.Object = function() {
   this.force = new THREE.Vector3();
   this.velocity = new THREE.Vector3();
   this.position = new THREE.Vector3();
+  this.mass = 1;
 };
 
 NP.Object.prototype = {
   constructor: NP.Object,
+
+  setValues: function (values) {
+    if (values === undefined) return;
+
+    var keys = Object.keys(values);
+    for(var i = 0, l = keys.length; i < l; i++) {
+      var key = keys[i];
+      var newValue = values[key];
+
+      if (newValue === undefined) {
+        console.warn( "NP.Object#setValues: '" + key + "' parameter is undefined." );
+        continue;
+      }
+
+      if (key in this) {
+        var currentValue = this[key];
+
+        if (currentValue instanceof THREE.Vector3 && newValue instanceof THREE.Vector3)
+          currentValue.copy( newValue );
+        else
+          this[ key ] = newValue;
+      }
+    }
+  },
+
   applyForce: function (force) {
     if (!(force instanceof NP.Force)) throw new Error('NP.Object#applyForce: param must be a NP.Force object.');
     this.forces.push(force);
@@ -424,37 +450,15 @@ NP.Object.prototype = {
  */
 
 /**
- * NP.ObjectContainer can contains every NP.Object
- *
- * @class NP.ObjectContainer
- * @constructor
- */
-NP.ObjectContainer = function() {
-  NP.Object.call(this);
-
-  /**
-   * The list of contained object.
-   *
-   * @type {Array}
-   */
-  this.childs = [];
-};
-
-NP.ObjectContainer.prototype = Object.create(NP.Object.prototype);
-NP.ObjectContainer.prototype.constructor = NP.ObjectContainer;
-
-/**
- * @author namhoon <emerald105@hanmail.net>
- */
-
-/**
  * @class NP.Sphere
  * @constructor
  */
-NP.Sphere = function(x, y, z, radius) {
+NP.Sphere = function(x, y, z, radius, parameters) {
   NP.Object.call(this);
   this.position = new THREE.Vector3(x, y, z);
   this.radius = radius !== undefined ? radius : 1;
+
+  this.setValues(parameters);
 };
 
 NP.Sphere.prototype = Object.create(NP.Object.prototype);

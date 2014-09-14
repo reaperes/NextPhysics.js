@@ -21,21 +21,33 @@
 
   var physics = new NextPhysics(document.getElementById('canvas-container'));
 
-  setTimeout(loop, 88);
+  var sphere = new NP.Sphere(5, 5, 5, 0.5, {mass: 1});
+  sphere.applyForce(new NP.Force(0, -9.8, 0));
+  physics.add(sphere);
+
+
+
+
+
+
+
+
+
+  //  setTimeout(loop, 88);
+  //  var loopCount = 0;
+  //  function loop() {
+  //    var x = Math.floor(Math.random() * 28) - 14;
+  //    var z = Math.floor(Math.random() * 28) - 14;
+  //    var r = Math.random() * 0.4;
+  //    var sphere = new NP.Sphere(x, 5, z, r);
+  //    sphere.applyForce(new NP.Force(0, -9.8, 0));
+  //    physics.add(sphere);
+  //
+  //    if (loopCount < 100) setTimeout(loop, loopCount++ * 88);
+  //  }
 
   physics.start();
 
-  var loopCount = 0;
-  function loop() {
-    var x = Math.floor(Math.random() * 28) - 14;
-    var z = Math.floor(Math.random() * 28) - 14;
-    var r = Math.random() * 0.4;
-    var sphere = new NP.Sphere(x, 5, z, r);
-    sphere.applyForce(new NP.Force(0, -9.8, 0));
-    physics.add(sphere);
-
-    if (loopCount < 100) setTimeout(loop, loopCount++ * 88);
-  }
 
 
 //  var engine = new NPEngine(document.getElementById("canvas"));
