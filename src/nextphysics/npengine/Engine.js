@@ -8,6 +8,7 @@
  */
 NP.Engine = function(physics) {
   var objects = [];
+  this.objects = objects;
 
   this.add = function(object) {
     objects.push(object);

@@ -67,6 +67,45 @@ NextPhysics = function (canvasContainer) {
   };
 
   /****************************************************
+   * Physics code
+   ****************************************************/
+  this.apply = function (parameters) {
+    if (parameters === undefined) return;
+
+    var keys = Object.keys(parameters);
+    var i, l;
+    for (i=0, l=keys.length; i<l; i++) {
+      var key = keys[i];
+      var value = parameters[key];
+      if (key == 'force') {
+        if (!(value instanceof NP.Force)) throw new Error('NextPhysics#apply: force value must be NP.Force object');
+        var j, m, objects = engine.objects;
+        for (j=0, m=objects.length; j<m; j++) {
+          objects[j].applyForce(value);
+        }
+      }
+    }
+  };
+
+  this.remove = function (parameters) {
+    if (parameters === undefined) return;
+
+    var keys = Object.keys(parameters);
+    var i, l;
+    for (i=0, l=keys.length; i<l; i++) {
+      var key = keys[i];
+      var value = parameters[key];
+      if (key == 'force') {
+        if (typeof value != 'string') throw new Error('NextPhysics#remove: force value must be force name (string)');
+        var j, m, objects = engine.objects;
+        for (j=0, m=objects.length; j<m; j++) {
+          objects[j].removeForce(value);
+        }
+      }
+    }
+  };
+
+  /****************************************************
    * Control camera
    ****************************************************/
   var camera = renderer.camera;

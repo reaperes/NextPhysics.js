@@ -28,22 +28,16 @@
   var physics = new NextPhysics(document.getElementById('canvas-container'));
 
   var sphere = new NP.Sphere(4, 5, 0, 0.1, {mass: 1});
-  sphere.applyForce(new NP.Force(0, -9.8, 0, {regardlessOfMass: true}));
   physics.add(sphere);
 
   var sphere2 = new NP.Sphere(8, 5, 0, 0.3, {mass: 3});
-  sphere2.applyForce(new NP.Force(0, -9.8, 0, {regardlessOfMass: true}));
   physics.add(sphere2);
 
+  physics.apply({force: new NP.Force(0, -9.8, 0, {regardlessOfMass: true})});
+
   var $wind = $('#wind');
-  $wind.mousedown(function () {
-    sphere.applyForce(new NP.Force(-20, 0, 0, {name:'wind'}));
-    sphere2.applyForce(new NP.Force(-20, 0, 0, {name:'wind'}));
-  });
-  $wind.mouseup(function () {
-    sphere.removeForce('wind');
-    sphere2.removeForce('wind');
-  });
+  $wind.mousedown(function () {physics.apply({'force':new NP.Force(-20, 0, 0, {name:'wind'})});});
+  $wind.mouseup(function () {physics.remove({'force':'wind'});});
 
   physics.start();
 

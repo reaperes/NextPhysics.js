@@ -52,6 +52,30 @@ NP.Util = function() {
             c.setMode(0), c.domElement.style.position = "absolute", c.domElement.style.left = "0px", 
             c.domElement.style.top = "0px", document.body.appendChild(c.domElement), requestAnimationFrame(b, d.canvas);
         } else requestAnimationFrame(a, d.canvas);
+    }, this.apply = function(a) {
+        if (void 0 !== a) {
+            var b, d, e = Object.keys(a);
+            for (b = 0, d = e.length; d > b; b++) {
+                var f = e[b], g = a[f];
+                if ("force" == f) {
+                    if (!(g instanceof NP.Force)) throw new Error("NextPhysics#apply: force value must be NP.Force object");
+                    var h, i, j = c.objects;
+                    for (h = 0, i = j.length; i > h; h++) j[h].applyForce(g);
+                }
+            }
+        }
+    }, this.remove = function(a) {
+        if (void 0 !== a) {
+            var b, d, e = Object.keys(a);
+            for (b = 0, d = e.length; d > b; b++) {
+                var f = e[b], g = a[f];
+                if ("force" == f) {
+                    if ("string" != typeof g) throw new Error("NextPhysics#remove: force value must be force name (string)");
+                    var h, i, j = c.objects;
+                    for (h = 0, i = j.length; i > h; h++) j[h].removeForce(g);
+                }
+            }
+        }
     };
     var f = d.camera, g = d.scene.position, h = 20, i = 0, j = 10, k = 0, l = 2, m = 1, n = 5, o = {
         0: !1,
@@ -149,7 +173,7 @@ NP.Util = function() {
         a.position.y < 0 && (a.velocity.y = Math.abs(a.velocity.y), a.position.y = 0);
     }
     var f = [];
-    this.add = function(a) {
+    this.objects = f, this.add = function(a) {
         f.push(a);
     }, this.update = function(g) {
         var h, i;
