@@ -9,6 +9,7 @@
  * @constructor
  */
 NP.Object = function() {
+  this.id = ++NP.ObjectIdCount;
   this.name = '';
 
   this.forces = [];
@@ -17,6 +18,8 @@ NP.Object = function() {
   this.position = new THREE.Vector3();
 
   this.mass = 1;
+
+  this.attractions = [];
 };
 
 NP.Object.prototype = {
@@ -57,5 +60,43 @@ NP.Object.prototype = {
     for (i=0, len=this.forces.length; i<len; i++)
       if (forces[i].name == name)
         forces.splice(i, 1);
+  },
+
+  applyAttraction: function (object, parameters) {
+    if (!(object instanceof NP.Object)) throw new Error('NP.Object#applyAttraction: param must be a NP.Object object.');
+    var attraction = new NP.Attraction(this, object, parameters);
+    this.attractions.push(attraction);
+    object.attractions.push(attraction);
+  },
+
+  removeAttraction: function (name) {
+    if (typeof name != 'string') throw new Error('NP.Object#removeForce: param must be a object name (string).');
+    var i, l, attractions=this.attractions;
+    for (i=0, l=attractions.length; i<l; i++) {
+      var attraction = attractions[i];
+      if (attraction.name == name) {
+        if (attraction.objectA.id == this.id) {
+          attractions.splice(i, 1);
+          attraction.objectB._removeAttraction(name);
+        }
+        else {
+          attractions.splice(i, 1);
+          attraction.objectA._removeAttraction(name);
+        }
+      }
+    }
+  },
+
+  _removeAttraction: function (name) {
+    var i, l, attractions = this.attractions;
+    for (i=0, l=this.attractions.length; i<l; i++) {
+      var attraction = attractions[i];
+      if (attraction.name == name) {
+        attractions.splice(i, 1);
+      }
+    }
   }
+
 };
+
+NP.ObjectIdCount = 0;

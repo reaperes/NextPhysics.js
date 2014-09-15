@@ -22,7 +22,7 @@ NP.Engine = function(physics) {
       updateForce(object);
       updateVelocity(object, deltaT);
       updatePosition(object, deltaT);
-      collisionCheck(object);
+      checkEdges(object);
     }
   };
 
@@ -31,10 +31,11 @@ NP.Engine = function(physics) {
   }
 
   function updateForce(object) {
-    var i, len;
+    var i, l;
     var forces = object.forces;
     var force = object.force;
-    for (i=0, len=forces.length; i<len; i++) {
+    for (i=0, l=forces.length; i<l; i++) {
+      // update singular force
       if (forces[i].regardlessOfMass)
         force.add(forces[i]);
       else {
@@ -44,6 +45,19 @@ NP.Engine = function(physics) {
           force.z += forces[i].z / object.mass;
         }
       }
+    }
+
+    // update attraction force
+    var attractions = object.attractions;
+    for (i=0, l=attractions.length; i<l; i++) {
+      var attraction = attractions[i];
+      if (attraction.objectA.id != object.id)
+        continue;
+
+      var af = attraction.getForce();
+      force.x += af.x / object.mass;
+      force.y += af.y / object.mass;
+      force.z += af.z / object.mass;
     }
   }
 
@@ -59,7 +73,7 @@ NP.Engine = function(physics) {
     object.position.z += object.velocity.z * deltaT;
   }
 
-  function collisionCheck(object) {
+  function checkEdges(object) {
     if (object.position.y < 0) {
       object.velocity.y = Math.abs(object.velocity.y);
       object.position.y = 0;

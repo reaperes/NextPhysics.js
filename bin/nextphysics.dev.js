@@ -363,6 +363,50 @@ NextPhysics.prototype.constructor = NextPhysics;
  */
 
 /**
+ * @class NP.Attraction
+ * @constructor
+ */
+NP.Attraction = function(objectA, objectB, parameters) {
+  this.name = '';
+
+  this.gravitationalConstant = 0.00000000006673;
+  this.objectA = objectA;
+  this.objectB = objectB;
+
+  this.setValues(parameters);
+};
+
+NP.Attraction.prototype = {
+  constructor: NP.Attraction,
+
+  setValues: function (values) {
+    if (values === undefined) return;
+
+    var keys = Object.keys(values);
+    for(var i = 0, l = keys.length; i < l; i++) {
+      var key = keys[i];
+      var newValue = values[key];
+
+      if (newValue === undefined) {
+        console.warn( "NP.Attraction#setValues: '" + key + "' parameter is undefined." );
+        continue;
+      }
+
+      if (key in this)
+        this[key] = newValue;
+    }
+  },
+
+  getForce: function() {
+    return this.gravitationalConstant * this.objectA.mass * this.objectB.mass / this.objectA.position.distanceToSquared(this.objectB.position);
+  }
+};
+
+/**
+ * @author namhoon <emerald105@hanmail.net>
+ */
+
+/**
  * @class NP.Engine
  * @constructor
  */
@@ -382,7 +426,7 @@ NP.Engine = function(physics) {
       updateForce(object);
       updateVelocity(object, deltaT);
       updatePosition(object, deltaT);
-      collisionCheck(object);
+      checkEdges(object);
     }
   };
 
@@ -391,10 +435,11 @@ NP.Engine = function(physics) {
   }
 
   function updateForce(object) {
-    var i, len;
+    var i, l;
     var forces = object.forces;
     var force = object.force;
-    for (i=0, len=forces.length; i<len; i++) {
+    for (i=0, l=forces.length; i<l; i++) {
+      // update singular force
       if (forces[i].regardlessOfMass)
         force.add(forces[i]);
       else {
@@ -404,6 +449,19 @@ NP.Engine = function(physics) {
           force.z += forces[i].z / object.mass;
         }
       }
+    }
+debugger;
+    // update attraction force
+    var attractions = object.attractions;
+    for (i=0, l=attractions.length; i<l; i++) {
+      var attraction = attractions[i];
+      if (attraction.objectA.id != object.id)
+        continue;
+
+      var af = attraction.getForce();
+      force.x += af.x / object.mass;
+      force.y += af.y / object.mass;
+      force.z += af.z / object.mass;
     }
   }
 
@@ -419,7 +477,7 @@ NP.Engine = function(physics) {
     object.position.z += object.velocity.z * deltaT;
   }
 
-  function collisionCheck(object) {
+  function checkEdges(object) {
     if (object.position.y < 0) {
       object.velocity.y = Math.abs(object.velocity.y);
       object.position.y = 0;
@@ -487,6 +545,7 @@ NP.Force.prototype.setValues = function (values) {
  * @constructor
  */
 NP.Object = function() {
+  this.id = ++NP.ObjectIdCount;
   this.name = '';
 
   this.forces = [];
@@ -495,6 +554,8 @@ NP.Object = function() {
   this.position = new THREE.Vector3();
 
   this.mass = 1;
+
+  this.attractions = [];
 };
 
 NP.Object.prototype = {
@@ -535,8 +596,46 @@ NP.Object.prototype = {
     for (i=0, len=this.forces.length; i<len; i++)
       if (forces[i].name == name)
         forces.splice(i, 1);
+  },
+
+  applyAttraction: function (object, parameters) {
+    if (!(object instanceof NP.Object)) throw new Error('NP.Object#applyAttraction: param must be a NP.Object object.');
+    var attraction = new NP.Attraction(this, object, parameters);
+    this.attractions.push(attraction);
+    object.attractions.push(attraction);
+  },
+
+  removeAttraction: function (name) {
+    if (typeof name != 'string') throw new Error('NP.Object#removeForce: param must be a object name (string).');
+    var i, l, attractions=this.attractions;
+    for (i=0, l=attractions.length; i<l; i++) {
+      var attraction = attractions[i];
+      if (attraction.name == name) {
+        if (attraction.objectA.id == this.id) {
+          attractions.splice(i, 1);
+          attraction.objectB._removeAttraction(name);
+        }
+        else {
+          attractions.splice(i, 1);
+          attraction.objectA._removeAttraction(name);
+        }
+      }
+    }
+  },
+
+  _removeAttraction: function (name) {
+    var i, l, attractions = this.attractions;
+    for (i=0, l=this.attractions.length; i<l; i++) {
+      var attraction = attractions[i];
+      if (attraction.name == name) {
+        attractions.splice(i, 1);
+      }
+    }
   }
+
 };
+
+NP.ObjectIdCount = 0;
 /**
  * @author namhoon <emerald105@hanmail.net>
  */

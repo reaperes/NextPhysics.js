@@ -17,9 +17,6 @@
 </head>
 <body>
   <div id="canvas-container" style="position:fixed;top:0;left:0;width:100%;height:100%;"></div>
-  <div id="button-container" style="position:fixed;top:10px;right:10px;">
-    <button id="wind" type="button" class="btn btn-sm btn-primary">Wind</button>
-  </div>
   <div id="debugTool" style="position:fixed;top:100px;left:20px">
     <span id="debug" style="font-size:22px">hello</span>
   </div>
@@ -27,17 +24,13 @@
 
   var physics = new NextPhysics(document.getElementById('canvas-container'));
 
-  var sphere = new NP.Sphere(4, 5, 0, 0.1, {mass: 1});
+  var sphere = new NP.Sphere(-4, 5, 0, 0.3, {mass: 1});
   physics.add(sphere);
 
-  var sphere2 = new NP.Sphere(8, 5, 0, 0.3, {mass: 3});
+  var sphere2 = new NP.Sphere(4, 5, 0, 0.3, {mass: 1});
   physics.add(sphere2);
 
-  physics.apply({force: new NP.Force(0, -9.8, 0, {regardlessOfMass: true})});
-
-  var $wind = $('#wind');
-  $wind.mousedown(function () {physics.apply({'force':new NP.Force(-20, 0, 0, {name:'wind'})});});
-  $wind.mouseup(function () {physics.remove({'force':'wind'});});
+  sphere.applyAttraction(sphere2);
 
   physics.start();
 

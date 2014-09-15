@@ -154,7 +154,21 @@ NP.Util = function() {
             }
         }, !1);
     }();
-}, NextPhysics.prototype.constructor = NextPhysics, NP.Engine = function() {
+}, NextPhysics.prototype.constructor = NextPhysics, NP.Attraction = function(a, b, c) {
+    this.name = "", this.gravitationalConstant = 6.673e-11, this.objectA = a, this.objectB = b, 
+    this.setValues(c);
+}, NP.Attraction.prototype = {
+    constructor: NP.Attraction,
+    setValues: function(a) {
+        if (void 0 !== a) for (var b = Object.keys(a), c = 0, d = b.length; d > c; c++) {
+            var e = b[c], f = a[e];
+            void 0 !== f ? e in this && (this[e] = f) : console.warn("NP.Attraction#setValues: '" + e + "' parameter is undefined.");
+        }
+    },
+    getForce: function() {
+        return this.gravitationalConstant * this.objectA.mass * this.objectB.mass / this.objectA.position.distanceToSquared(this.objectB.position);
+    }
+}, NP.Engine = function() {
     function a(a) {
         a.force.set(0, 0, 0);
     }
@@ -162,6 +176,14 @@ NP.Util = function() {
         var b, c, d = a.forces, e = a.force;
         for (b = 0, c = d.length; c > b; b++) d[b].regardlessOfMass ? e.add(d[b]) : 0 != a.mass && (e.x += d[b].x / a.mass, 
         e.y += d[b].y / a.mass, e.z += d[b].z / a.mass);
+        var f = a.attractions;
+        for (b = 0, c = f.length; c > b; b++) {
+            var g = f[b];
+            if (g.objectA.id == a.id) {
+                var h = g.getForce();
+                e.x += h.x / a.mass, e.y += h.y / a.mass, e.z += h.z / a.mass;
+            }
+        }
     }
     function c(a, b) {
         a.velocity.x += a.force.x * b, a.velocity.y += a.force.y * b, a.velocity.z += a.force.z * b;
@@ -197,8 +219,9 @@ NP.Force.prototype.setValues = function(a) {
         } else console.warn("NP.Object#setValues: '" + e + "' parameter is undefined.");
     }
 }, NP.Object = function() {
-    this.name = "", this.forces = [], this.force = new THREE.Vector3(), this.velocity = new THREE.Vector3(), 
-    this.position = new THREE.Vector3(), this.mass = 1;
+    this.id = ++NP.ObjectIdCount, this.name = "", this.forces = [], this.force = new THREE.Vector3(), 
+    this.velocity = new THREE.Vector3(), this.position = new THREE.Vector3(), this.mass = 1, 
+    this.attractions = [];
 }, NP.Object.prototype = {
     constructor: NP.Object,
     setValues: function(a) {
@@ -220,8 +243,29 @@ NP.Force.prototype.setValues = function(a) {
         if ("string" != typeof a) throw new Error("NP.Object#removeForce: param must be a force name (string).");
         var b, c, d = this.forces;
         for (b = 0, c = this.forces.length; c > b; b++) d[b].name == a && d.splice(b, 1);
+    },
+    applyAttraction: function(a, b) {
+        if (!(a instanceof NP.Object)) throw new Error("NP.Object#applyAttraction: param must be a NP.Object object.");
+        var c = new NP.Attraction(this, a, b);
+        this.attractions.push(c), a.attractions.push(c);
+    },
+    removeAttraction: function(a) {
+        if ("string" != typeof a) throw new Error("NP.Object#removeForce: param must be a object name (string).");
+        var b, c, d = this.attractions;
+        for (b = 0, c = d.length; c > b; b++) {
+            var e = d[b];
+            e.name == a && (e.objectA.id == this.id ? (d.splice(b, 1), e.objectB._removeAttraction(a)) : (d.splice(b, 1), 
+            e.objectA._removeAttraction(a)));
+        }
+    },
+    _removeAttraction: function(a) {
+        var b, c, d = this.attractions;
+        for (b = 0, c = this.attractions.length; c > b; b++) {
+            var e = d[b];
+            e.name == a && d.splice(b, 1);
+        }
     }
-}, NP.Sphere = function(a, b, c, d, e) {
+}, NP.ObjectIdCount = 0, NP.Sphere = function(a, b, c, d, e) {
     NP.Object.call(this), this.position = new THREE.Vector3(a, b, c), this.radius = void 0 !== d ? d : 1, 
     this.setValues(e);
 }, NP.Sphere.prototype = Object.create(NP.Object.prototype), NP.Sphere.prototype.constructor = NP.Sphere, 
