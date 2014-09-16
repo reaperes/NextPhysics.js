@@ -7,15 +7,14 @@
   <script type="text/javascript" src="lib/jquery-2.1.1.js"></script>
   <script type="text/javascript" src="lib/stats.min.js"></script>
   <script type="text/javascript" src="lib/dat.gui.min.js"></script>
-  <script type="text/javascript" src="lib/underscore.js"></script>
-  <script type="text/javascript" src="lib/underscore.js"></script>
+  <script type="text/javascript" src="lib/TrackballControls.js"></script>
   <script type="text/javascript" src="bin/nextphysics.dev.js"></script>
   <script type="text/css" src="test.css"></script>
   <!--Bootstrap-->
   <link href="lib/css/bootstrap.min.css" rel="stylesheet">
   <script src="lib/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body style="background-image:url(./images/starfield.jpg);">
   <div id="canvas-container" style="position:fixed;top:0;left:0;width:100%;height:100%;"></div>
   <div id="debugTool" style="position:fixed;top:100px;left:20px">
     <span id="debug" style="font-size:22px">hello</span>
@@ -24,13 +23,18 @@
 
   var physics = new NextPhysics(document.getElementById('canvas-container'));
 
-  var sphere = new NP.Sphere(-4, 5, 0, 0.3, {mass: 1});
-  physics.add(sphere);
+  var sun = new NP.Sphere(0, 0, 0, 6.955);
+  physics.add(sun);
 
-  var sphere2 = new NP.Sphere(4, 5, 0, 0.3, {mass: 1});
-  physics.add(sphere2);
-
-  sphere.applyAttraction(sphere2);
+//  var sphere = new NP.Sphere(4, 10, 0, 0.3, {mass: 100000000000});
+//  sphere.applyForce(new NP.Force(-15000000000, 0, 0));
+//  physics.add(sphere);
+//
+//  var sphere2 = new NP.Sphere(4, 4, 0, 0.3, {mass: 100000000000});
+//  sphere2.applyForce(new NP.Force(15000000000, 0, 0));
+//  physics.add(sphere2);
+//
+//  sphere.applyAttraction(sphere2);
 
   physics.start();
 
