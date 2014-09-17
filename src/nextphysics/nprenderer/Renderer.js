@@ -10,7 +10,7 @@
  * @param canvasContainer {HTMLDivElement}
  */
 NP.Renderer = function(canvasContainer) {
-  var renderer = new THREE.WebGLRenderer();
+  var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
   var scene = new THREE.Scene();
   this.scene = scene;
   var updateFunctions = [];
@@ -21,7 +21,7 @@ NP.Renderer = function(canvasContainer) {
   canvasContainer.appendChild(renderer.domElement);
 
   var camera = new THREE.PerspectiveCamera(45, canvasContainer.offsetWidth / canvasContainer.offsetHeight, 0.001, 10000);
-  camera.position.z = 500;
+  camera.position.z = 100;
   this.camera = camera;
 
   // Grid
@@ -39,9 +39,30 @@ NP.Renderer = function(canvasContainer) {
 
   // lights
   scene.add(new THREE.AmbientLight(0x333333));
-  var light = new THREE.DirectionalLight(0xffffff, 0.6);
-  light.position.set(5, 3, 5);
-  scene.add(light);
+//  scene.add(new THREE.AmbientLight(0xffffff));
+
+
+
+//  var light = new THREE.DirectionalLight(0xffffff, 0.6);
+//  light.position.set(0, 0, 0);
+//  light.target.position.set(10, 10, 0);
+//  scene.add(light);
+
+
+//  var spotLight = new THREE.SpotLight( 0xffffff );
+//  spotLight.position.set( 100, 1000, 100 );
+//  spotLight.castShadow = true;
+//  spotLight.shadowMapWidth = 1024;
+//  spotLight.shadowMapHeight = 1024;
+//  spotLight.shadowCameraNear = 500;
+//  spotLight.shadowCameraFar = 4000;
+//  spotLight.shadowCameraFov = 30;
+//  scene.add( spotLight );
+
+//  var spotlight = new THREE.SpotLight(0xffffff, 0.6);
+//  spotlight.position.set(0, 0, 0);
+//  scene.add(spotlight);
+
 //  var light = new THREE.PointLight(0xEEEEEE);
 //  light.position.set(20, 0, 20);
 //  scene.add(light);

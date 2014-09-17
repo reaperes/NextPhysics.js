@@ -15,14 +15,18 @@ NP.Engine = function(physics) {
   };
 
   this.update = function(deltaT) {
-    var i, len;
-    for (i=0, len=objects.length; i<len; i++) {
-      var object = objects[i];
-      resetForce(object);
-      updateForce(object);
+    var i, l, object;
+    for (i=0, l=objects.length; i<l; i++)
+      resetForce(objects[i]);
+
+    for (i=0; i<l; i++)
+      updateForce(objects[i]);
+
+    for (i=0; i<l; i++) {
+      object = objects[i];
       updateVelocity(object, deltaT);
       updatePosition(object, deltaT);
-      checkEdges(object);
+//      checkEdges(object);
     }
   };
 
@@ -32,10 +36,26 @@ NP.Engine = function(physics) {
 
   function updateForce(object) {
     var i, l;
-    var forces = object.forces;
+
+    // update global force
+    var forces = physics.forces;
     var force = object.force;
     for (i=0, l=forces.length; i<l; i++) {
-      // update singular force
+      if (forces[i].regardlessOfMass)
+        force.add(forces[i]);
+      else {
+        if (object.mass != 0) {
+          force.x += forces[i].x / object.mass;
+          force.y += forces[i].y / object.mass;
+          force.z += forces[i].z / object.mass;
+        }
+      }
+    }
+
+    // update singular force
+    forces = object.forces;
+    force = object.force;
+    for (i=0, l=forces.length; i<l; i++) {
       if (forces[i].regardlessOfMass)
         force.add(forces[i]);
       else {
@@ -54,10 +74,16 @@ NP.Engine = function(physics) {
       if (attraction.objectA.id != object.id)
         continue;
 
-      var af = attraction.getForce();
+      var af = attraction.getForceAB();
       force.x += af.x / object.mass;
       force.y += af.y / object.mass;
       force.z += af.z / object.mass;
+
+      var objectB = attraction.objectB;
+      var objectBForce = objectB.force;
+      objectBForce.x -= af.x / objectB.mass;
+      objectBForce.y -= af.y / objectB.mass;
+      objectBForce.z -= af.z / objectB.mass;
     }
   }
 
@@ -73,12 +99,12 @@ NP.Engine = function(physics) {
     object.position.z += object.velocity.z * deltaT;
   }
 
-  function checkEdges(object) {
-    if (object.position.y < 0) {
-      object.velocity.y = Math.abs(object.velocity.y);
-      object.position.y = 0;
-    }
-  }
+//  function checkEdges(object) {
+//    if (object.position.y < 0) {
+//      object.velocity.y = Math.abs(object.velocity.y);
+//      object.position.y = 0;
+//    }
+//  }
 };
 
 NP.Engine.prototype.constructor = NP.Engine;

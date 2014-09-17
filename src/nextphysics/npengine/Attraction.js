@@ -9,7 +9,8 @@
 NP.Attraction = function(objectA, objectB, parameters) {
   this.name = '';
 
-  this.gravitationalConstant = 0.00000000006673;
+//  this.gravitationalConstant = 0.00000000006673;
+  this.gravitationalConstant = 1.181e-19;
   this.objectA = objectA;
   this.objectB = objectB;
 
@@ -37,10 +38,9 @@ NP.Attraction.prototype = {
     }
   },
 
-  getForce: function() {
-    // todo need to learn
-    var v = new THREE.Vector3().subVectors(this.objectA, this.objectB);
-    var distance = v.distan
-    return this.gravitationalConstant * this.objectA.mass * this.objectB.mass / this.objectA.position.distanceToSquared(this.objectB.position);
+  getForceAB: function() {
+    var force = new THREE.Vector3().subVectors(this.objectB.position, this.objectA.position);
+    var strength = this.gravitationalConstant * this.objectA.mass * this.objectB.mass / this.objectA.position.distanceToSquared(this.objectB.position);
+    return force.normalize().multiplyScalar(strength);
   }
 };

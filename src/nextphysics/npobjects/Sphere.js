@@ -23,6 +23,7 @@ NP.Sphere.prototype.renderScript = function(scene) {
     color: Math.random() * 0xffffff,
     wireframe: true
   }));
+
   sphere.position.set(this.position.x, this.position.y, this.position.z);
   this.position = sphere.position;
   scene.add(sphere);

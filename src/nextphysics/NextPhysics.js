@@ -2,26 +2,23 @@
  * @author namhoon <emerald105@hanmail.net>
  */
 
-/**
- * @class NextPhysics
- * @param canvasContainer {HTMLElement}
- * @constructor
- */
-NextPhysics = function (canvasContainer) {
+NextPhysics = function (canvasContainer, parameters) {
   // prevent right mouse click
   document.oncontextmenu = document.body.oncontextmenu = function() {return false;};
 
   var engine = new NP.Engine(this);
   var renderer = new NP.Renderer(canvasContainer);
+  var camera = renderer.camera;
 
-  var deltaT = 0.01;
+  this.forces = [];
+
+  this.deltaT = 1;
+
+  this.setValues(parameters);
 
   this.add = function (npobject) {
     engine.add(npobject);
     renderer.add(npobject);
-  };
-
-  this.border = function (x1, y1, z1, x2, y2, z2) {
   };
 
   /****************************************************
@@ -29,7 +26,7 @@ NextPhysics = function (canvasContainer) {
    ****************************************************/
 
   this.update = function () {
-    engine.update(deltaT);
+    engine.update(this.deltaT);
   };
 
   this.render = function () {
@@ -79,10 +76,7 @@ NextPhysics = function (canvasContainer) {
       var value = parameters[key];
       if (key == 'force') {
         if (!(value instanceof NP.Force)) throw new Error('NextPhysics#apply: force value must be NP.Force object');
-        var j, m, objects = engine.objects;
-        for (j=0, m=objects.length; j<m; j++) {
-          objects[j].applyForce(value);
-        }
+        this.forces.push(value);
       }
     }
   };
@@ -97,10 +91,10 @@ NextPhysics = function (canvasContainer) {
       var value = parameters[key];
       if (key == 'force') {
         if (typeof value != 'string') throw new Error('NextPhysics#remove: force value must be force name (string)');
-        var j, m, objects = engine.objects;
-        for (j=0, m=objects.length; j<m; j++) {
-          objects[j].removeForce(value);
-        }
+        var j, m, forces=this.forces;
+        for (j=0, m=this.forces.length; j<m; j++)
+          if (forces[j].name == name)
+            forces.splice(j, 1);
       }
     }
   };
@@ -108,7 +102,7 @@ NextPhysics = function (canvasContainer) {
   /****************************************************
    * Control camera
    ****************************************************/
-  var controls = new THREE.TrackballControls(renderer.camera);
+  var controls = new THREE.TrackballControls(camera);
   controls.rotateSpeed = 1.0;
   controls.zoomSpeed = 1.2;
   controls.panSpeed = 0.8;
@@ -116,6 +110,26 @@ NextPhysics = function (canvasContainer) {
   controls.noPan = false;
   controls.staticMoving = true;
   controls.dynamicDampingFactor = 0.3;
+
+  this.setCameraPosition = function (x, y, z) {
+    camera.position.set(x, y, z);
+  }
 };
 
 NextPhysics.prototype.constructor = NextPhysics;
+NextPhysics.prototype.setValues = function (values) {
+  if (values === undefined) return;
+  var keys = Object.keys(values);
+  for(var i = 0, l = keys.length; i < l; i++) {
+    var key = keys[i];
+    var newValue = values[key];
+
+    if (newValue === undefined) {
+      console.warn("NextPhysics: '" + key + "' parameter is undefined.");
+      continue;
+    }
+
+    if (key in this)
+      this[ key ] = newValue;
+  }
+};

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Next PhysicsEngine (mini) - Pendulum</title>
+  <script type="text/javascript" src="../../lib/three-r68.js"></script>
+  <script type="text/javascript" src="../../lib/jquery-2.1.1.js"></script>
+  <script type="text/javascript" src="../../lib/stats.min.js"></script>
+  <script type="text/javascript" src="../../lib/TrackballControls.js"></script>
+  <script type="text/javascript" src="../../bin/nextphysics.dev.js"></script>
+  <!--Bootstrap-->
+  <link href="../../lib/css/bootstrap.min.css" rel="stylesheet">
+  <script src="../../lib/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div id="canvas-container" style="position:fixed;top:0;left:0;width:100%;height:100%;"></div>
+  <div id="debugTool" style="position:fixed;top:100px;left:20px">
+  <span id="debug" style="font-size:22px">hello</span>
+</div>
+<script type="text/javascript" src="Planets.js"></script>
+<script type="text/javascript">
+
+  var container = document.getElementById('canvas-container');
+
+  /**
+   * Orbital characteristics by nylee
+   *
+   * sun - earth 1.013 AU
+   * sun - moon  1.016 AU
+   */
+  var physics = new NextPhysics(container, {deltaT: 60 * 60 * 24});
+  physics.setCameraPosition(0, 0, 2);
+
+  var moon = new Moon(1.016, 0, 0, 0.0004, {velocity: new THREE.Vector3(0, 1.95e-7, 0)});
+  physics.add(moon);
+
+  var earth = new Earth(1.013, 0, 0, 0.01, {velocity: new THREE.Vector3(0, 2.02e-7, 0)});
+  earth.applyAttraction(moon);
+  physics.add(earth);
+
+  var sun = new Sun(0, 0, 0, 0.1);
+  sun.applyAttraction(earth);
+  sun.applyAttraction(moon);
+  physics.add(sun);
+
+//  physics.apply({
+//    force: new NP.Force(1e-14, 0, 0, {regardlessOfMass: true})
+//  });
+  physics.start();
+
+</script>
+</body>
+</html>
